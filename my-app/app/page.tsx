@@ -1,11 +1,11 @@
-"use client";  // This line tells Next.js that this is a Client Component
+"use client";
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState('');
   const [balance, setBalance] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [showFullAddress, setShowFullAddress] = useState(false);
 
   useEffect(() => {
@@ -17,8 +17,7 @@ export default function Home() {
   const connectWallet = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
-        // Instantiate provider with Infura
-        const provider = new ethers.InfuraProvider('homestead', process.env.NEXT_PUBLIC_INFURA_PROJECT_ID);
+        const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setWalletAddress(accounts[0]);
 
@@ -29,19 +28,17 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
-      setError(error.message);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
     }
   };
 
-  // Function to truncate the wallet address
-  const truncateAddress = (address) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
-  // Function to toggle the display of the full address
-  const toggleAddress = () => {
-    setShowFullAddress(!showFullAddress);
-  };
+  const toggleAddress = () => setShowFullAddress(!showFullAddress);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
