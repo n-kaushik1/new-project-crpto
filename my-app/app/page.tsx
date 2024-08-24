@@ -17,7 +17,8 @@ export default function Home() {
   const connectWallet = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
-        const provider = new ethers.BrowserProvider(window.ethereum); // Use BrowserProvider
+        // Instantiate provider with Infura
+        const provider = new ethers.InfuraProvider('homestead', process.env.NEXT_PUBLIC_INFURA_PROJECT_ID);
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setWalletAddress(accounts[0]);
 
